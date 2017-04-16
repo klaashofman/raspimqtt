@@ -1,8 +1,11 @@
-pi1=pi.local
-pi2=pi2.local
+#!/bin/sh
+#
+# install script that runs on pi
 
-cat ~/.ssh/id_rsa.pub | ssh pi@pi.local 'cat >> .ssh/authorized_keys'
-cat ~/.ssh/id_rsa.pub | ssh pi@pi2.local 'cat >> .ssh/authorized_keys'
-
-scp install.sh pi@pi.local: || exit 1
-ssh pi@pi.local 'sh -x ~/install.sh'
+for hostfile in $(ls host*.txt) ; do
+	host=$(cat $hostfile)
+	echo "-------------------- INSTALLING on $host -----------------"
+	cat ~/.ssh/id_rsa.pub | ssh pi@$host 'cat >> .ssh/authorized_keys'
+	scp install.sh pi@$host: 
+	ssh pi@$host 'sh -x ~/install.sh'
+done
